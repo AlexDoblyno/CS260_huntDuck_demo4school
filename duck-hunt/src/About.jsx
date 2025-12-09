@@ -11,7 +11,7 @@ export default function About() {
         <strong>How to play:</strong><br/>
         Click on the ducks as they fly across the screen to score points.
       </p>
-      <p style={{marginTop: '20px', fontSize: '0.9rem', color: '#666'}}>
+      <p style={{marginTop: '10px', fontSize: '0.9rem', color: '#666'}}>
          Find source code on https://github.com/AlexDoblyno/CS260_huntDuck_demo4school.git
       </p>
     </div>
