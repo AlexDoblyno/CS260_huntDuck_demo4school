@@ -1,44 +1,46 @@
 import { MongoClient } from 'mongodb';
 
-// 从环境变量读取配置，如果没设置则使用默认值 (防止报错，但实际连接需要真实账号)
-const userName = process.env.MONGOUSER || 'username';
-const password = process.env.MONGOPASSWORD || 'password';
-const hostname = process.env.MONGOHOSTNAME || 'cluster0.xxxxx.mongodb.net'; // 这里需要换成你的实际地址
+const userName = process.env.MONGOUSER;
+const password = process.env.MONGOPASSWORD;
+const hostname = process.env.MONGOHOSTNAME || 'localhost:27017';
 
-if (!userName || !password || !hostname) {
-  throw Error('Database configuration missing');
+let url;
+
+if (userName && password) {
+  // 如果有用户名和密码，连接 MongoDB Atlas (云端)
+  url = `mongodb+srv://${userName}:${password}@${hostname}`;
+} else {
+  // 如果没有，连接本地 MongoDB
+  // 这里的 /duckhunt 是数据库的名字，如果没有它会自动创建
+  url = `mongodb://${hostname}/duckhunt`;
 }
 
-
-const url = `mongodb+srv://${userName}:${password}@${hostname}`;
-
+// 创建连接客户端
 const client = new MongoClient(url);
 const scoreCollection = client.db('duckhunt').collection('scores');
 
-// 测试连接函数 (可选，用于调试)
-export async function testConnection() {
+// 测试连接并打印当前模式
+(async function testConnection() {
   try {
     await client.connect();
     await client.db('admin').command({ ping: 1 });
-    console.log("Connected successfully to MongoDB server");
+    console.log(`✅ Connected successfully to MongoDB (${userName ? 'Atlas Cloud' : 'Localhost'})`);
   } catch (error) {
-    console.error("Unable to connect to database:", error);
+    console.error(`❌ Unable to connect to database: ${url}`, error);
+    process.exit(1); // 连接失败直接退出
   }
-}
+})();
 
-// 1. 获取前 10 名高分
 export async function getHighScores() {
-  const query = { score: { $gt: 0 } }; // 只查找分数大于0的
+  const query = { score: { $gt: 0 } };
   const options = {
-    sort: { score: -1 }, // 按分数降序排列 (-1)
-    limit: 10,           // 只取前 10 名
+    sort: { score: -1 },
+    limit: 10,
   };
-  
   const cursor = scoreCollection.find(query, options);
   return cursor.toArray();
 }
 
-// 2. 添加新分数
 export async function addScore(scoreData) {
   const result = await scoreCollection.insertOne(scoreData);
   return result;
