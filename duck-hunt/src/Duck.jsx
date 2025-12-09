@@ -1,4 +1,3 @@
-// src/Duck.jsx
 import React from 'react';
 
 // 阶段一：位置是写死的，还没有动态 props
