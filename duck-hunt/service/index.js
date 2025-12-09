@@ -1,28 +1,36 @@
 import express from 'express';
+import { addScore, getHighScores } from './database.js'; // 导入数据库函数
+
 const app = express();
 
 app.use(express.json());
 
-let scores = [
-  { name: 'Hunter1', score: 50, date: '2024-10-01' },
-  { name: 'Hunter2', score: 40, date: '2024-10-02' },
-];
-
 const apiRouter = express.Router();
 app.use('/api', apiRouter);
 
-apiRouter.get('/scores', (_req, res) => {
-  res.send(scores);
+apiRouter.get('/scores', async (_req, res) => {
+  try {
+    const scores = await getHighScores();
+    res.send(scores);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ msg: 'Internal Server Error' });
+  }
 });
 
-apiRouter.post('/score', (req, res) => {
-  const newScore = req.body;
-  scores.push(newScore);
-  scores.sort((a, b) => b.score - a.score);
-  if (scores.length > 10) {
-    scores.length = 10;
+// SubmitScore 接口 (改为 async)
+apiRouter.post('/score', async (req, res) => {
+  try {
+    const newScore = req.body;
+    await addScore(newScore);
+    
+    // 插入成功后，重新获取最新排行榜返回给前端
+    const scores = await getHighScores();
+    res.send(scores);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ msg: 'Internal Server Error' });
   }
-  res.send(scores);
 });
 
 app.use(express.static('dist'));
