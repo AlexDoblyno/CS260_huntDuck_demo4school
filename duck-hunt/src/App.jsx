@@ -9,11 +9,11 @@ import './App.css';
 function App() {
   return (
     <BrowserRouter>
-      <div className="app">
+      <div className="app-container">
         {/* 导航栏 */}
         <header className="navbar">
           <div className="brand">🦆 Duck Hunt</div>
-          <nav>
+          <nav className="nav-links">
             <NavLink className="nav-item" to="/">Login</NavLink>
             <NavLink className="nav-item" to="/play">Play</NavLink>
             <NavLink className="nav-item" to="/scores">Scores</NavLink>
@@ -21,14 +21,16 @@ function App() {
           </nav>
         </header>
 
-        {/* 路由出口 */}
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/play" element={<Play />} />
-          <Route path="/scores" element={<Scores />} />
-          <Route path="/about" element={<About />} />
-          <Route path="*" element={<main>404 Not Found</main>} />
-        </Routes>
+        {/* 主内容区域 */}
+        <main className="main-content">
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/play" element={<Play />} />
+            <Route path="/scores" element={<Scores />} />
+            <Route path="/about" element={<About />} />
+            <Route path="*" element={<div className="card">404 Not Found</div>} />
+          </Routes>
+        </main>
       </div>
     </BrowserRouter>
   );
