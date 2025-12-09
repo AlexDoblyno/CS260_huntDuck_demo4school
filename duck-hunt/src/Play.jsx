@@ -5,12 +5,12 @@ import Duck from './Duck';
 export default function Play() {
   const [score, setScore] = useState(0);
   const [position, setPosition] = useState({ x: 50, y: 100 });
+  const [timeLeft, setTimeLeft] = useState(30); // 30秒倒计时
   const navigate = useNavigate();
 
   const getRandomPosition = () => {
     const winWidth = window.innerWidth;
     const winHeight = window.innerHeight;
-
     const DUCK_SIZE = 60;
     const NAV_HEIGHT = 60;
     const GROUND_HEIGHT = 150;
@@ -18,10 +18,8 @@ export default function Play() {
 
     const minX = PADDING;
     const maxX = winWidth - DUCK_SIZE - PADDING;
-
     const minY = NAV_HEIGHT + PADDING;
     const maxY = winHeight - GROUND_HEIGHT - DUCK_SIZE - PADDING;
-
     const safeMaxX = Math.max(minX, maxX);
     const safeMaxY = Math.max(minY, maxY);
 
@@ -33,24 +31,34 @@ export default function Play() {
 
   useEffect(() => {
     setPosition(getRandomPosition());
-
-    const intervalId = setInterval(() => {
+    const moveInterval = setInterval(() => {
       setPosition(getRandomPosition());
     }, 1200);
-
-    return () => clearInterval(intervalId);
+    return () => clearInterval(moveInterval);
   }, []);
 
+  useEffect(() => {
+    if (timeLeft > 0) {
+      const timerId = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(timerId);
+    } else if (timeLeft === 0) {
+      saveScore();
+    }
+  }, [timeLeft]);
+
   const shootDuck = (e) => {
-    e.stopPropagation(); 
-    setScore((prevScore) => prevScore + 1);
-    setPosition(getRandomPosition());
+    e.stopPropagation();
+    if (timeLeft > 0) {
+      setScore((prevScore) => prevScore + 1);
+      setPosition(getRandomPosition());
+    }
   };
 
   const saveScore = async () => {
     const userName = localStorage.getItem('userName') || 'Anonymous';
     const date = new Date().toLocaleDateString();
-    
     const newScore = { name: userName, score: score, date: date };
 
     try {
@@ -59,7 +67,6 @@ export default function Play() {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(newScore),
       });
-
       navigate('/scores');
     } catch (error) {
       console.error('Failed to save score:', error);
@@ -69,28 +76,53 @@ export default function Play() {
 
   return (
     <div className="game-area-wrapper">
-      <div className="scoreboard">
+      {/* 修改点：这里直接加上内联的 flex 样式，
+        确保 Score, Time 和 Button 强制在同一行显示 
+      */}
+      <div className="scoreboard" style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: '20px',
+        width: 'auto' // 允许宽度自适应内容
+      }}>
         <span>Score: {score}</span>
+        
+        <span style={{ color: timeLeft < 10 ? '#ff4444' : 'white', minWidth: '80px' }}>
+          Time: {timeLeft}s
+        </span>
+        
         <button 
           onClick={saveScore}
           style={{
-            marginLeft: '20px', 
-            fontSize: '0.9rem', 
-            padding: '5px 15px', 
-            width: 'auto',
-            verticalAlign: 'middle',
-            backgroundColor: '#e74c3c'
+            // 按钮样式调整：去除 margin-top，强制不许换行
+            margin: 0,
+            fontSize: '1rem', 
+            padding: '8px 16px', 
+            width: 'auto', 
+            backgroundColor: '#e74c3c',
+            whiteSpace: 'nowrap', // 防止文字换行
+            border: '2px solid white', // 加个白边框确保能看见
+            cursor: 'pointer'
           }}
         >
           Stop & Save
         </button>
       </div>
 
-      <Duck 
-        x={position.x} 
-        y={position.y} 
-        onClick={shootDuck} 
-      />
+      {timeLeft > 0 && (
+        <Duck x={position.x} y={position.y} onClick={shootDuck} />
+      )}
+      
+      {timeLeft === 0 && (
+        <div style={{
+          position: 'absolute', top: '50%', left: '50%',
+          transform: 'translate(-50%, -50%)',
+          fontSize: '4rem', fontWeight: 'bold', color: 'white',
+          textShadow: '0 0 10px red', zIndex: 50
+        }}>
+          GAME OVER
+        </div>
+      )}
 
       <div className="ground"></div>
     </div>
