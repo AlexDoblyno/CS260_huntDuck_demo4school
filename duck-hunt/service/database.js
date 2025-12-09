@@ -2,9 +2,9 @@ import { MongoClient } from 'mongodb';
 import bcrypt from 'bcryptjs';
 import { v4 as uuid } from 'uuid';
 
-const userName = process.env.MONGOUSER;
-const password = process.env.MONGOPASSWORD;
-const hostname = process.env.MONGOHOSTNAME || 'localhost:27017';
+const userName = process.env.MONGOUSER || 'Alex';
+const password = process.env.MONGOPASSWORD || '600123abc';
+const hostname = process.env.MONGOHOSTNAME || 'cluster0.oj2uccb.mongodb.net/?appName=Cluster0';
 
 const url = userName 
   ? `mongodb+srv://${userName}:${password}@${hostname}` 

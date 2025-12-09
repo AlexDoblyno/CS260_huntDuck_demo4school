@@ -71,9 +71,9 @@ function setAuthCookie(res, token) {
   });
 }
 
-app.use(express.static('dist'));
+app.use(express.static('public'));
 app.use((_req, res) => {
-  res.sendFile('index.html', { root: 'dist' });
+  res.sendFile('index.html', { root: 'public' });
 });
 
 const httpService = app.listen(port, () => {

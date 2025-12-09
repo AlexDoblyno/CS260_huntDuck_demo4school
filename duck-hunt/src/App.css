@@ -1,14 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Press+Start+2P&display=swap');
 
 :root {
-  /* 复古未来主义 5色谱 (The 5 Lines) */
   --retro-1: #ff0055; /* 激进红 */
   --retro-2: #ff9900; /* 暖橙 */
   --retro-3: #ffdd00; /* 亮黄 */
   --retro-4: #33dd00; /* 终端绿 */
   --retro-5: #0099ff; /* 科技蓝 */
   
-  /* 5色条纹渐变 (用于边框装饰) */
   --retro-stripe: linear-gradient(90deg, 
     var(--retro-1) 20%, 
     var(--retro-2) 20% 40%, 
@@ -42,14 +40,12 @@ body {
   font-family: var(--font-main);
   background-color: var(--bg-color);
   color: var(--text-main);
-  /* 复古网格背景 */
   background-image: 
     linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
-/* --- 布局容器 --- */
 .app-container {
   display: flex;
   flex-direction: column;
@@ -57,7 +53,6 @@ body {
   height: 100vh;
 }
 
-/* --- 1. 导航栏 (带彩虹条) --- */
 .navbar {
   flex: 0 0 70px;
   background-color: #000;
@@ -70,7 +65,6 @@ body {
   border-bottom: 2px solid #333;
 }
 
-/* 5色线条装饰 - 放在导航栏底部 */
 .navbar::after {
   content: '';
   position: absolute;
@@ -94,12 +88,10 @@ body {
 
 .brand-icon {
   font-size: 1.8rem;
-  /* 修复：移除滤镜，防止模糊 */
   filter: none; 
   transform: scaleX(-1); /* 让鸭子头朝右 */
 }
 
-/* 导航链接 */
 .nav-links {
   display: flex;
   gap: 5px;
@@ -133,7 +125,6 @@ body {
   gap: 15px;
 }
 
-/* --- 2. 登录卡片 (统一风格) --- */
 .main-content {
   flex: 1;
   display: flex;
@@ -153,7 +144,6 @@ body {
   border: 1px solid #333;
 }
 
-/* 卡片顶部的 5色条装饰 */
 .card::before {
   content: '';
   position: absolute;
@@ -174,8 +164,6 @@ body {
   line-height: 1.5;
 }
 
-/* --- 3. 统一输入框样式 (关键修复) --- */
-/* 同时选中 text 和 password，确保样式一致 */
 input[type="text"],
 input[type="password"] {
   width: 100%;
@@ -191,14 +179,12 @@ input[type="password"] {
   transition: border-color 0.3s;
 }
 
-/* 聚焦时变色 */
 input[type="text"]:focus,
 input[type="password"]:focus {
   border-color: var(--retro-5); /* 聚焦变蓝 */
   box-shadow: 0 0 8px rgba(0, 153, 255, 0.3);
 }
 
-/* --- 4. 按钮样式 --- */
 button {
   width: 100%;
   padding: 15px;
@@ -240,7 +226,6 @@ button:disabled {
   box-shadow: none;
 }
 
-/* 切换注册/登录的文字 */
 .toggle-auth {
   margin-top: 25px;
   font-size: 0.9rem;
@@ -253,7 +238,6 @@ button:disabled {
   text-decoration: underline;
 }
 
-/* --- 5. 游戏界面修复 --- */
 .game-area-wrapper {
   position: absolute;
   top: 0; left: 0; width: 100%; height: 100%;
@@ -277,7 +261,6 @@ button:disabled {
   box-shadow: 0 5px 0 rgba(0,0,0,0.5); /* 像素风厚度阴影 */
 }
 
-/* 停止按钮 (红色复古风) */
 .stop-btn {
   background: var(--retro-1) !important;
   color: white !important;
@@ -286,7 +269,7 @@ button:disabled {
   font-size: 0.7rem !important;
   width: auto !important;
   margin: 0 !important;
-  box-shadow: 0 4px 0 #990033 !important; /* 立体按键效果 */
+  box-shadow: 0 4px 0 #990033 !important;
   transform: none !important;
 }
 .stop-btn:active {
@@ -297,7 +280,6 @@ button:disabled {
 .ground {
   position: absolute;
   bottom: 0; left: 0; width: 100%; height: 150px;
-  /* 复古合成波网格地面 */
   background: 
     linear-gradient(transparent 0%, #121212 100%),
     linear-gradient(0deg, transparent 24%, rgba(51, 221, 0, 0.3) 25%, rgba(51, 221, 0, 0.3) 26%, transparent 27%, transparent 74%, rgba(51, 221, 0, 0.3) 75%, rgba(51, 221, 0, 0.3) 76%, transparent 77%, transparent),
@@ -308,7 +290,6 @@ button:disabled {
   z-index: 10;
 }
 
-/* 左下角通讯面板 */
 .notification-panel {
   position: absolute;
   bottom: 20px; left: 20px;
@@ -330,7 +311,6 @@ button:disabled {
 .event-item { color: #aaa; margin-bottom: 4px; font-size: 0.8rem; }
 .event-highlight { color: var(--retro-3); margin-right: 5px; }
 
-/* --- Retro CRT Terminal (在线终端) --- */
 .terminal-window {
   position: absolute;
   bottom: 20px;
@@ -353,7 +333,6 @@ button:disabled {
   opacity: 0.9;
 }
 
-/* 终端顶部的装饰条 */
 .terminal-header {
   border-bottom: 1px solid #33ff00;
   padding-bottom: 5px;
@@ -365,21 +344,18 @@ button:disabled {
   letter-spacing: 1px;
 }
 
-/* 日志列表容器 */
 .terminal-logs {
   flex: 1;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  /* 隐藏滚动条但允许滚动 */
   scrollbar-width: none; 
 }
 .terminal-logs::-webkit-scrollbar {
   display: none;
 }
 
-/* 单条日志 */
 .log-line {
   line-height: 1.4;
   word-wrap: break-word;
@@ -391,7 +367,6 @@ button:disabled {
   font-size: 0.7rem;
 }
 
-/* 闪烁的光标，假装正在输入 */
 .cursor {
   display: inline-block;
   width: 8px;
@@ -407,7 +382,6 @@ button:disabled {
   50% { opacity: 0; }
 }
 
-/* 扫描线特效 (CRT Scanline) - 让它看起来像旧屏幕 */
 .terminal-window::after {
   content: " ";
   display: block;
@@ -419,5 +393,139 @@ button:disabled {
   background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
   z-index: 2;
   background-size: 100% 2px, 3px 100%;
-  pointer-events: none; /* 让点击穿透 */
+  pointer-events: none;
+}
+.retro-window {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  
+  resize: both; 
+  overflow: hidden;
+  
+  width: 350px;
+  height: 300px;
+
+  min-width: 250px;
+  min-height: 150px;
+  max-width: 800px;
+  max-height: 80vh;
+
+  background-color: rgba(0, 0, 0, 0.95); 
+  border: 2px solid #333;
+  border-radius: 6px;
+  z-index: 1000;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+  font-family: 'Courier New', Courier, monospace;
+  
+  display: flex;
+  flex-direction: column;
+  transition: height 0.3s ease, width 0.3s ease;
+}
+
+.retro-window.minimized {
+  height: 42px !important; 
+  width: 200px !important; 
+  resize: none; /* 收起时禁止缩放 */
+  overflow: hidden;
+}
+
+.window-header {
+  flex: 0 0 auto; 
+  background: #222;
+  color: #33ff00;
+  padding: 8px 10px;
+  border-bottom: 1px solid #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: grab; 
+  user-select: none;
+}
+
+.window-header:active {
+  cursor: grabbing;
+}
+
+
+.header-title {
+  font-size: 0.8rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.status-dot {
+  color: #33ff00;
+  animation: blink 2s infinite;
+  margin-right: 5px;
+}
+
+.window-toggle-btn {
+  background: transparent;
+  border: 1px solid #444;
+  color: #33ff00;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.6rem;
+  margin: 0;
+  cursor: pointer;
+  padding: 0;
+}
+.window-toggle-btn:hover {
+  background: #333;
+}
+
+.window-body {
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; 
+  width: 100%;
+}
+
+.system-info {
+  padding: 5px 10px;
+  border-bottom: 1px dashed #333;
+  color: #0099ff;
+  font-size: 0.75rem;
+}
+.highlight-count {
+  color: white;
+  font-weight: bold;
+}
+
+.log-container {
+  flex: 1;
+  overflow-y: auto; 
+  padding: 10px;
+  color: #33ff00;
+  font-size: 0.75rem;
+  text-shadow: 0 0 2px rgba(51, 255, 0, 0.4);
+  
+  scrollbar-width: thin;
+  scrollbar-color: #333 black;
+}
+
+.log-line {
+  margin-bottom: 4px;
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+
+.log-time {
+  opacity: 0.6;
+  margin-right: 8px;
+  font-size: 0.7rem;
+}
+
+.cursor {
+  display: inline-block;
+  width: 6px; height: 12px;
+  background: #33ff00;
+  margin-left: 5px;
+  vertical-align: middle;
+  animation: blink 1s step-end infinite;
 }
