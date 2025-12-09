@@ -1,53 +1,56 @@
 import { MongoClient } from 'mongodb';
+import bcrypt from 'bcryptjs';
+import { v4 as uuid } from 'uuid';
 
 const userName = process.env.MONGOUSER;
 const password = process.env.MONGOPASSWORD;
 const hostname = process.env.MONGOHOSTNAME || 'localhost:27017';
 
+const url = userName 
+  ? `mongodb+srv://${userName}:${password}@${hostname}` 
+  : `mongodb://${hostname}/duckhunt`;
 
-// const userName = process.env.MONGOUSER || 'your_username';
-// const password = process.env.MONGOPASSWORD || 'your_password';
-// const hostname = process.env.MONGOHOSTNAME || 'cluster0.xxxxx.mongodb.net';
-
-
-let url;
-
-if (userName && password) {
-  // 如果有用户名和密码，连接 MongoDB Atlas (云端)
-  url = `mongodb+srv://${userName}:${password}@${hostname}`;
-} else {
-  // 如果没有，连接本地 MongoDB
-  // 这里的 /duckhunt 是数据库的名字，如果没有它会自动创建
-  url = `mongodb://${hostname}/duckhunt`;
-}
-
-// 创建连接客户端
 const client = new MongoClient(url);
-const scoreCollection = client.db('duckhunt').collection('scores');
+const db = client.db('duckhunt');
+const scoreCollection = db.collection('scores');
+const userCollection = db.collection('users'); // 新增用户集合
 
-// 测试连接并打印当前模式
 (async function testConnection() {
   try {
     await client.connect();
-    await client.db('admin').command({ ping: 1 });
-    console.log(`✅ Connected successfully to MongoDB (${userName ? 'Atlas Cloud' : 'Localhost'})`);
+    await db.command({ ping: 1 });
+    console.log(`✅ Connected to MongoDB`);
   } catch (error) {
-    console.error(`❌ Unable to connect to database: ${url}`, error);
-    process.exit(1); // 连接失败直接退出
+    console.error(`❌ DB Connection Error: ${error}`);
+    process.exit(1);
   }
 })();
 
 export async function getHighScores() {
   const query = { score: { $gt: 0 } };
-  const options = {
-    sort: { score: -1 },
-    limit: 10,
-  };
-  const cursor = scoreCollection.find(query, options);
-  return cursor.toArray();
+  const options = { sort: { score: -1 }, limit: 10 };
+  return scoreCollection.find(query, options).toArray();
 }
 
 export async function addScore(scoreData) {
-  const result = await scoreCollection.insertOne(scoreData);
-  return result;
+  return scoreCollection.insertOne(scoreData);
+}
+
+export function getUser(email) {
+  return userCollection.findOne({ email: email });
+}
+
+export function getUserByToken(token) {
+  return userCollection.findOne({ token: token });
+}
+
+export async function createUser(email, password) {
+  const passwordHash = await bcrypt.hash(password, 10);
+  const user = {
+    email: email,
+    password: passwordHash,
+    token: uuid(),
+  };
+  await userCollection.insertOne(user);
+  return user;
 }
