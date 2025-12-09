@@ -3,91 +3,117 @@ import { useNavigate } from 'react-router-dom';
 import Duck from './Duck';
 
 export default function Play() {
-  // 游戏状态
+  // --- 游戏状态 ---
   const [score, setScore] = useState(0);
   const [position, setPosition] = useState({ x: 50, y: 100 });
   const [timeLeft, setTimeLeft] = useState(30);
   
-  // WebSocket 状态
-  const [onlineCount, setOnlineCount] = useState(1);
-  const [events, setEvents] = useState([]);
-  const socketRef = useRef(null);
+  // --- 终端日志状态 ---
+  const [logs, setLogs] = useState([]); 
+  const logsEndRef = useRef(null); // 用于自动滚动到底部
+  const socketRef = useRef(null);  // WebSocket 引用
 
   const navigate = useNavigate();
   const userName = localStorage.getItem('userName') || 'Anonymous';
 
-  // --- WebSocket 初始化 ---
+  // --- 1. WebSocket 连接与事件处理 ---
   useEffect(() => {
-    // 自动判断协议: http -> ws, https -> wss
+    // 自动判断协议: 开发环境或生产环境自动切换 ws/wss
     const protocol = window.location.protocol === 'http:' ? 'ws' : 'wss';
     const host = window.location.host;
     const socket = new WebSocket(`${protocol}://${host}`);
 
     socket.onopen = () => {
-      // 登录时广播
-      broadcastEvent('joined the hunt');
+      // 连接成功，本地显示系统日志
+      addLogSystem('UPLINK ESTABLISHED... ENCRYPTED CHANNEL ACTIVE.');
+      
+      // 发送初始化消息给后端，注册用户名
+      const initMsg = { type: 'init', user: userName };
+      socket.send(JSON.stringify(initMsg));
     };
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      if (data.type === 'count') {
-        setOnlineCount(data.value);
-      } else if (data.type === 'gameEvent') {
-        addEvent(`${data.user} ${data.action}`);
+      // 接收来自服务器的广播日志
+      if (data.type === 'log') {
+        addLog(data.message);
       }
+    };
+
+    socket.onclose = () => {
+      addLogSystem('CONNECTION LOST. RECONNECTING...');
     };
 
     socketRef.current = socket;
 
+    // 组件卸载时断开连接
     return () => {
-      socket.close();
+      if (socket.readyState === 1) { // OPEN
+        socket.close();
+      }
     };
   }, []);
 
-  // 辅助函数：发送消息
-  const broadcastEvent = (action) => {
+  // --- 2. 日志自动滚动效果 ---
+  useEffect(() => {
+    // 每当 logs 数组更新，自动滚动到最底部
+    logsEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [logs]);
+
+  // 辅助函数：添加普通日志 (来自 WebSocket)
+  const addLog = (msg) => {
+    const time = new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
+    // 只保留最近 20 条日志，防止内存溢出
+    setLogs((prev) => [...prev.slice(-20), { time, text: msg }]); 
+  };
+
+  // 辅助函数：添加本地系统日志 (不经过服务器)
+  const addLogSystem = (msg) => {
+    addLog(`[SYS] ${msg}`);
+  };
+
+  // 辅助函数：向服务器广播游戏动作
+  const broadcastAction = (actionText) => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
-      const msg = { type: 'gameEvent', user: userName, action: action };
+      const msg = { type: 'gameEvent', action: actionText };
       socketRef.current.send(JSON.stringify(msg));
     }
   };
 
-  // 辅助函数：添加消息到 UI 列表
-  const addEvent = (msg) => {
-    setEvents((prev) => {
-      const newEvents = [...prev, msg];
-      if (newEvents.length > 5) return newEvents.slice(1); // 只保留最近5条
-      return newEvents;
-    });
-  };
-
-  // --- 游戏移动逻辑 ---
+  // --- 3. 游戏核心逻辑 ---
+  
+  // 计算鸭子随机位置 (确保不飞出屏幕)
   const getRandomPosition = () => {
     const winWidth = window.innerWidth;
     const winHeight = window.innerHeight;
-    const DUCK_SIZE = 60; const NAV_HEIGHT = 60; const GROUND_HEIGHT = 150; const PADDING = 20;
+    const DUCK_SIZE = 70; 
+    const NAV_HEIGHT = 70; 
+    const GROUND_HEIGHT = 150; 
+    const PADDING = 20;
 
     const minX = PADDING;
     const maxX = winWidth - DUCK_SIZE - PADDING;
     const minY = NAV_HEIGHT + PADDING;
     const maxY = winHeight - GROUND_HEIGHT - DUCK_SIZE - PADDING;
-
+    
     const safeMaxX = Math.max(minX, maxX);
     const safeMaxY = Math.max(minY, maxY);
+    
     const x = Math.floor(Math.random() * (safeMaxX - minX)) + minX;
     const y = Math.floor(Math.random() * (safeMaxY - minY)) + minY;
     return { x, y };
   };
 
+  // 鸭子移动循环
   useEffect(() => {
     setPosition(getRandomPosition());
     const moveInterval = setInterval(() => {
       setPosition(getRandomPosition());
-    }, 1200);
+    }, 1200); // 1.2秒移动一次
     return () => clearInterval(moveInterval);
   }, []);
 
-  // --- 倒计时逻辑 ---
+  // 倒计时逻辑
   useEffect(() => {
     if (timeLeft > 0) {
       const timerId = setInterval(() => {
@@ -95,32 +121,31 @@ export default function Play() {
       }, 1000);
       return () => clearInterval(timerId);
     } else if (timeLeft === 0) {
+      // 时间到，自动保存
       saveScore();
     }
   }, [timeLeft]);
 
-  // --- 射击逻辑 ---
+  // 射击处理
   const shootDuck = (e) => {
-    e.stopPropagation(); // 防止事件冒泡
+    e.stopPropagation(); // 防止点击穿透
     if (timeLeft > 0) {
       const newScore = score + 1;
       setScore(newScore);
       setPosition(getRandomPosition());
-
-      // 每得 10 分广播一次，防止刷屏
-      if (newScore > 0 && newScore % 10 === 0) {
-        broadcastEvent(`hit ${newScore} ducks!`);
-      }
+      
+      // 广播击杀日志：制造刷屏快感
+      broadcastAction(`AGENT <${userName}> ELIMINATED TARGET. SCORE: ${newScore}`);
     }
   };
 
-  // --- 保存分数逻辑 ---
+  // 保存分数并退出
   const saveScore = async () => {
     const date = new Date().toLocaleDateString();
     const newScore = { name: userName, score: score, date: date };
 
-    // 广播结束消息
-    broadcastEvent(`finished with ${score} pts!`);
+    // 广播任务结束日志
+    broadcastAction(`AGENT <${userName}> MISSION COMPLETE. FINAL SCORE: ${score}`);
 
     try {
       await fetch('/api/score', {
@@ -137,44 +162,63 @@ export default function Play() {
 
   return (
     <div className="game-area-wrapper">
-      {/* 顶部计分板 */}
-      <div className="scoreboard" style={{ display: 'flex', alignItems: 'center', gap: '20px', width: 'auto' }}>
-        <span>Score: {score}</span>
-        <span style={{ color: timeLeft < 10 ? '#ff4444' : 'white', minWidth: '80px' }}>
-          Time: {timeLeft}s
+      {/* 顶部 HUD 计分板 */}
+      <div className="scoreboard">
+        <span>SCORE: {score}</span>
+        <span style={{ color: timeLeft < 10 ? '#ff0055' : 'white', minWidth: '100px' }}>
+          TIME: {timeLeft}s
         </span>
-        <button 
-          onClick={saveScore}
-          style={{ margin: 0, fontSize: '1rem', padding: '8px 16px', width: 'auto', backgroundColor: '#e74c3c', border: '2px solid white', cursor: 'pointer', whiteSpace: 'nowrap' }}
-        >
-          Stop & Save
-        </button>
+        <button onClick={saveScore} className="stop-btn">ABORT MISSION</button>
       </div>
 
-      {/* 左下角 WebSocket 消息面板 */}
-      <div className="notification-panel">
-        <div className="player-count">Players Online: {onlineCount}</div>
-        <ul className="event-list">
-          {events.map((msg, index) => (
-            <li key={index} className="event-item">
-              <span className="event-highlight">»</span> {msg}
-            </li>
+      {/* 左下角复古终端 (Retro Terminal) */}
+      <div className="terminal-window">
+        <div className="terminal-header">
+          <span>NET_LOG // V.1.0</span>
+          <span>● ONLINE</span>
+        </div>
+        <div className="terminal-logs">
+          {logs.map((log, index) => (
+            <div key={index} className="log-line">
+              <span className="log-time">[{log.time}]</span>
+              {log.text}
+            </div>
           ))}
-        </ul>
+
+          <div ref={logsEndRef} />
+          
+          <div className="log-line">
+            <span className="log-time">[{new Date().toLocaleTimeString([], {hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit'})}]</span>
+            _Waiting for signal<span className="cursor"></span>
+          </div>
+        </div>
       </div>
 
-      {/* 鸭子 */}
+      {/* 鸭子目标 */}
       {timeLeft > 0 && (
         <Duck x={position.x} y={position.y} onClick={shootDuck} />
       )}
       
-      {/* 游戏结束文字 */}
+      {/* 游戏结束画面 */}
       {timeLeft === 0 && (
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', fontSize: '4rem', fontWeight: 'bold', color: 'white', textShadow: '0 0 10px red', zIndex: 50 }}>
-          GAME OVER
+        <div style={{ 
+          position: 'absolute', 
+          top: '50%', 
+          left: '50%', 
+          transform: 'translate(-50%, -50%)', 
+          fontFamily: "'Press Start 2P', cursive", 
+          fontSize: '3rem', 
+          color: '#ff0055', 
+          textShadow: '0 0 20px rgba(255,0,85,0.8)', 
+          zIndex: 50, 
+          textAlign: 'center', 
+          lineHeight: '1.5' 
+        }}>
+          MISSION<br/>FAILED
         </div>
       )}
 
+      {/* 复古网格地面 */}
       <div className="ground"></div>
     </div>
   );

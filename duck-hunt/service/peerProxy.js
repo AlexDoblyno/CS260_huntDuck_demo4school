@@ -2,63 +2,59 @@ import { WebSocketServer } from 'ws';
 import { v4 as uuidv4 } from 'uuid';
 
 export function peerProxy(httpServer) {
-  // 创建 WebSocket 服务器对象
   const wss = new WebSocketServer({ noServer: true });
 
-  // 处理 HTTP 协议升级为 WebSocket 协议
   httpServer.on('upgrade', (request, socket, head) => {
     wss.handleUpgrade(request, socket, head, (ws) => {
       wss.emit('connection', ws, request);
     });
   });
 
-  // 跟踪连接列表
   let connections = [];
 
   wss.on('connection', (ws) => {
-    const connection = { id: Math.floor(Math.random() * 100000), ws, alive: true };
+    // 初始连接对象，暂时不知道名字，直到前端发来 init 消息
+    const connection = { id: uuidv4(), ws, alive: true, user: 'Unknown Agent' };
     connections.push(connection);
 
-    // 1. 当有新用户连接，向所有人广播最新的在线人数
-    broadcastCount();
-
-    // 2. 处理接收到的消息
     ws.on('message', function message(data) {
-      connections.forEach((c) => {
-        // 将消息转发给除了发送者以外的所有人 (或者发给所有人，取决于需求)
-        // 这里我们发给除了自己以外的人，避免自己看到自己的“User scored”刷屏，
-        // 或者你可以选择发给所有人。这里我们选择发给*其他人*。
-        if (c.id !== connection.id) {
-          c.ws.send(data);
-        }
-      });
-    });
+      const msg = JSON.parse(data);
 
-    // 3. 处理连接断开
-    ws.on('close', () => {
-      const pos = connections.findIndex((o, i) => o.id === connection.id);
-      if (pos >= 0) {
-        connections.splice(pos, 1);
-        // 广播更新后的人数
-        broadcastCount();
+      if (msg.type === 'init') {
+        // 1. 初始化：记录用户名并广播 "JOIN" 事件
+        connection.user = msg.user;
+        broadcastLog(`[SYS] CONNECTION ESTABLISHED: AGENT <${connection.user}> JOINED.`);
+      } else if (msg.type === 'gameEvent') {
+        // 2. 游戏事件：直接转发
+        // 比如: "AGENT <Hunter1> ELIMINATED TARGET (Score: 10)"
+        broadcastLog(`[LOG] ${msg.action}`);
       }
     });
 
-    // 4. 心跳检测 (保持连接活跃)
+    ws.on('close', () => {
+      const pos = connections.findIndex((o, i) => o.id === connection.id);
+      if (pos >= 0) {
+        // 3. 断开连接：广播 "LEFT" 事件
+        const userLeft = connections[pos].user;
+        connections.splice(pos, 1);
+        broadcastLog(`[SYS] CONNECTION LOST: AGENT <${userLeft}> DISCONNECTED.`);
+      }
+    });
+
     ws.on('pong', () => {
       connection.alive = true;
     });
   });
 
-  // 广播在线人数的辅助函数
-  function broadcastCount() {
-    const countMsg = JSON.stringify({ type: 'count', value: connections.length });
+  // 广播日志给所有人
+  function broadcastLog(text) {
+    const packet = JSON.stringify({ type: 'log', message: text, timestamp: new Date().toISOString() });
     connections.forEach((c) => {
-      c.ws.send(countMsg);
+      // 这里的策略是发给所有人，包括自己，这样自己的终端也能看到确认回显，更有感觉
+      c.ws.send(packet);
     });
   }
 
-  // 定时清理死连接
   setInterval(() => {
     connections.forEach((c) => {
       if (!c.alive) {
