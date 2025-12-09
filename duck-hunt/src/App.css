@@ -50,3 +50,53 @@ body {
   content: "🦆"; /* 使用 Emoji 作为鸭子，简单直观 */
   font-size: 30px;
 }
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  color: white;
+  padding: 10px 20px;
+  position: relative;
+  z-index: 100; /* 确保在最上层 */
+}
+
+.brand {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.nav-item {
+  color: #aaa;
+  text-decoration: none;
+  margin-left: 15px;
+}
+
+.nav-item.active {
+  color: white;
+  border-bottom: 2px solid #ffcc00;
+}
+
+/* 页面通用容器 */
+.page-content {
+  padding: 40px;
+  text-align: center;
+  color: #333;
+}
+
+.login-container input {
+  padding: 10px;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+/* 调整 Play 区域，因为现在有了导航栏 */
+.game-area {
+  position: relative;
+  /* 减去导航栏的高度 */
+  height: calc(100vh - 50px); 
+  width: 100vw;
+  overflow: hidden;
+  background-color: #87CEEB;
+}
