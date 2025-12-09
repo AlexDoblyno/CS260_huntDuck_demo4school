@@ -1,3 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Press+Start+2P&display=swap');
+
+:root {
+  /* 复古未来主义 5色谱 (The 5 Lines) */
+  --retro-1: #ff0055; /* 激进红 */
+  --retro-2: #ff9900; /* 暖橙 */
+  --retro-3: #ffdd00; /* 亮黄 */
+  --retro-4: #33dd00; /* 终端绿 */
+  --retro-5: #0099ff; /* 科技蓝 */
+  
+  /* 5色条纹渐变 (用于边框装饰) */
+  --retro-stripe: linear-gradient(90deg, 
+    var(--retro-1) 20%, 
+    var(--retro-2) 20% 40%, 
+    var(--retro-3) 40% 60%, 
+    var(--retro-4) 60% 80%, 
+    var(--retro-5) 80%
+  );
+
+  --bg-color: #121212;
+  --card-bg: #1e1e1e;
+  --text-main: #eeeeee;
+  --text-dim: #888888;
+  
+  --font-main: 'Poppins', sans-serif;
+  --font-pixel: 'Press Start 2P', cursive;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -11,11 +39,17 @@ html, body, #root {
 }
 
 body {
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: #87CEEB;
-  color: #333;
+  font-family: var(--font-main);
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  /* 复古网格背景 */
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
+/* --- 布局容器 --- */
 .app-container {
   display: flex;
   flex-direction: column;
@@ -23,196 +57,367 @@ body {
   height: 100vh;
 }
 
+/* --- 1. 导航栏 (带彩虹条) --- */
 .navbar {
-  flex: 0 0 60px;
-  width: 100%;
-  background-color: #2c3e50;
+  flex: 0 0 70px;
+  background-color: #000;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  padding: 0 30px;
+  position: relative;
   z-index: 100;
-  color: white;
+  border-bottom: 2px solid #333;
+}
+
+/* 5色线条装饰 - 放在导航栏底部 */
+.navbar::after {
+  content: '';
+  position: absolute;
+  bottom: -5px; /* 悬挂在下方 */
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: var(--retro-stripe);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
 .brand {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #ffcc00;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-family: var(--font-pixel);
+  font-size: 1.2rem;
+  color: white;
+  letter-spacing: -1px;
 }
 
+.brand-icon {
+  font-size: 1.8rem;
+  /* 修复：移除滤镜，防止模糊 */
+  filter: none; 
+  transform: scaleX(-1); /* 让鸭子头朝右 */
+}
+
+/* 导航链接 */
 .nav-links {
   display: flex;
-  gap: 20px;
+  gap: 5px;
 }
 
 .nav-item {
-  color: #bdc3c7;
+  color: var(--text-dim);
   text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s;
+  font-weight: 600;
+  padding: 8px 16px;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
 }
 
-.nav-item:hover, .nav-item.active {
+.nav-item:hover {
   color: white;
 }
 
+.nav-item.active {
+  color: var(--retro-3); /* 激活时变黄 */
+  text-shadow: 0 0 8px var(--retro-3);
+}
+
+.user-info {
+  font-size: 0.85rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* --- 2. 登录卡片 (统一风格) --- */
 .main-content {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
-  width: 100%;
 }
 
 .card {
-  background-color: white;
-  color: #333333;
-  padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  background: var(--card-bg);
+  padding: 3rem;
+  width: 400px;
+  border-radius: 4px; /* 复古风不需要太大圆角 */
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
   text-align: center;
-  max-width: 400px;
-  width: 90%;
+  position: relative;
+  border: 1px solid #333;
 }
 
-.card h1 {
-  margin-top: 0;
-  color: #2c3e50; 
-}
-
-input[type="text"] {
-  width: 100%;
-  padding: 12px;
-  margin: 15px 0;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  color: #333;
-  background: #fff;
-}
-
-button {
-  width: 100%;
-  padding: 12px;
-  background-color: #ff8c00;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-button:hover {
-  background-color: #e67e22;
-}
-
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.game-area-wrapper {
+/* 卡片顶部的 5色条装饰 */
+.card::before {
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 6px;
+  background: var(--retro-stripe);
+  border-radius: 4px 4px 0 0;
 }
 
-.ground {
-  position: absolute;
-  bottom: 0;
-  left: 0;
+.card h1 {
+  font-family: var(--font-pixel);
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  color: white;
+  text-transform: uppercase;
+  line-height: 1.5;
+}
+
+/* --- 3. 统一输入框样式 (关键修复) --- */
+/* 同时选中 text 和 password，确保样式一致 */
+input[type="text"],
+input[type="password"] {
   width: 100%;
-  height: 150px;
-  background: linear-gradient(#228B22, #006400);
-  z-index: 10;
+  padding: 15px;
+  margin-bottom: 15px;
+  background-color: #121212;
+  border: 2px solid #333;
+  color: white;
+  font-family: var(--font-main);
+  font-size: 1rem;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+/* 聚焦时变色 */
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border-color: var(--retro-5); /* 聚焦变蓝 */
+  box-shadow: 0 0 8px rgba(0, 153, 255, 0.3);
+}
+
+/* --- 4. 按钮样式 --- */
+button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 10px;
+  background: var(--text-main);
+  color: black;
+  font-family: var(--font-pixel);
+  font-size: 0.8rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: transform 0.1s, background-color 0.2s;
+}
+
+button:hover:not(:disabled) {
+  background-color: var(--retro-3); /* 悬停变黄 */
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 221, 0, 0.4);
+}
+
+button:disabled {
+  background-color: #333;
+  color: #555;
+  cursor: not-allowed;
+}
+
+.logout-btn {
+  background: transparent;
+  border: 1px solid #444;
+  color: #888;
+  padding: 5px 12px;
+  width: auto;
+  margin: 0;
+}
+.logout-btn:hover {
+  border-color: var(--retro-1);
+  color: var(--retro-1);
+  background: transparent;
+  box-shadow: none;
+}
+
+/* 切换注册/登录的文字 */
+.toggle-auth {
+  margin-top: 25px;
+  font-size: 0.9rem;
+  color: #666;
+}
+.toggle-auth span {
+  color: var(--retro-5);
+  cursor: pointer;
+  margin-left: 5px;
+  text-decoration: underline;
+}
+
+/* --- 5. 游戏界面修复 --- */
+.game-area-wrapper {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  user-select: none;
 }
 
 .scoreboard {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  font-size: 2rem;
-  font-weight: bold;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+  background: #000;
+  border: 2px solid #333;
+  padding: 10px 20px;
+  font-family: var(--font-pixel);
+  font-size: 0.8rem;
+  z-index: 50;
   color: white;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-  z-index: 20;
+  box-shadow: 0 5px 0 rgba(0,0,0,0.5); /* 像素风厚度阴影 */
 }
 
-@media (max-width: 600px) {
-  .brand {
-    font-size: 1.2rem;
-  }
-  .nav-links {
-    gap: 10px;
-  }
-  .nav-item {
-    font-size: 0.9rem;
-  }
-  .scoreboard {
-    font-size: 1.5rem;
-  }
+/* 停止按钮 (红色复古风) */
+.stop-btn {
+  background: var(--retro-1) !important;
+  color: white !important;
+  border: none !important;
+  padding: 8px 15px !important;
+  font-size: 0.7rem !important;
+  width: auto !important;
+  margin: 0 !important;
+  box-shadow: 0 4px 0 #990033 !important; /* 立体按键效果 */
+  transform: none !important;
 }
-/* src/App.css */
-
-/* --- 修复：全局禁止文本选择 --- */
-/* 防止点击鸭子时变成选中文本状态，提升游戏手感 */
-.game-area-wrapper {
-  user-select: none; /* 标准语法 */
-  -webkit-user-select: none; /* Safari */
-  -moz-user-select: none; /* Firefox */
+.stop-btn:active {
+  transform: translateY(4px) !important;
+  box-shadow: none !important;
 }
 
-/* --- 新增：左下角通讯面板 --- */
+.ground {
+  position: absolute;
+  bottom: 0; left: 0; width: 100%; height: 150px;
+  /* 复古合成波网格地面 */
+  background: 
+    linear-gradient(transparent 0%, #121212 100%),
+    linear-gradient(0deg, transparent 24%, rgba(51, 221, 0, 0.3) 25%, rgba(51, 221, 0, 0.3) 26%, transparent 27%, transparent 74%, rgba(51, 221, 0, 0.3) 75%, rgba(51, 221, 0, 0.3) 76%, transparent 77%, transparent),
+    linear-gradient(90deg, transparent 24%, rgba(51, 221, 0, 0.3) 25%, rgba(51, 221, 0, 0.3) 26%, transparent 27%, transparent 74%, rgba(51, 221, 0, 0.3) 75%, rgba(51, 221, 0, 0.3) 76%, transparent 77%, transparent);
+  background-size: 50px 50px;
+  background-color: #051a05;
+  border-top: 2px solid var(--retro-4);
+  z-index: 10;
+}
+
+/* 左下角通讯面板 */
 .notification-panel {
+  position: absolute;
+  bottom: 20px; left: 20px;
+  width: 260px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid #333;
+  border-left: 4px solid var(--retro-4);
+  padding: 15px;
+  z-index: 50;
+  font-family: monospace;
+  pointer-events: none;
+}
+.player-count {
+  color: var(--retro-4);
+  font-weight: bold;
+  border-bottom: 1px dashed #444;
+  margin-bottom: 5px; padding-bottom: 5px;
+}
+.event-item { color: #aaa; margin-bottom: 4px; font-size: 0.8rem; }
+.event-highlight { color: var(--retro-3); margin-right: 5px; }
+
+/* --- Retro CRT Terminal (在线终端) --- */
+.terminal-window {
   position: absolute;
   bottom: 20px;
   left: 20px;
-  width: 250px;
-  background: rgba(0, 0, 0, 0.6); /* 半透明黑底 */
-  color: white;
-  border-radius: 8px;
+  width: 320px;
+  height: 250px; /*稍微高一点，显示更多日志*/
+  background-color: #000000;
+  border: 2px solid #333;
+  border-radius: 4px;
   padding: 10px;
-  font-size: 0.9rem;
-  z-index: 50; /* 确保在最上层 */
-  pointer-events: none; /* 让鼠标点击穿透过去，不影响玩游戏 */
-}
-
-.player-count {
-  font-weight: bold;
-  border-bottom: 1px solid rgba(255,255,255,0.3);
-  padding-bottom: 5px;
-  margin-bottom: 5px;
-  color: #00ff00; /* 绿色显示人数 */
-}
-
-.event-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  max-height: 150px;
+  font-family: 'Courier New', Courier, monospace; /* 等宽字体是关键 */
+  font-size: 0.75rem;
+  color: #33ff00; /* 经典的终端绿 */
+  text-shadow: 0 0 5px rgba(51, 255, 0, 0.5); /* 文字发光 */
   overflow: hidden; /* 隐藏滚动条 */
   display: flex;
-  flex-direction: column-reverse; /* 新消息在上面或下面，这里让最新的在最底部 */
+  flex-direction: column;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+  z-index: 50;
+  opacity: 0.9;
 }
 
-.event-item {
-  margin-bottom: 4px;
-  animation: fadeOut 5s forwards; /* 消息5秒后自动变淡 */
+/* 终端顶部的装饰条 */
+.terminal-header {
+  border-bottom: 1px solid #33ff00;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.event-highlight {
-  color: #ffff00; /* 高亮重要消息 */
+/* 日志列表容器 */
+.terminal-logs {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  /* 隐藏滚动条但允许滚动 */
+  scrollbar-width: none; 
+}
+.terminal-logs::-webkit-scrollbar {
+  display: none;
 }
 
-@keyframes fadeOut {
-  0% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { opacity: 0.5; }
+/* 单条日志 */
+.log-line {
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.log-time {
+  opacity: 0.6;
+  margin-right: 8px;
+  font-size: 0.7rem;
+}
+
+/* 闪烁的光标，假装正在输入 */
+.cursor {
+  display: inline-block;
+  width: 8px;
+  height: 12px;
+  background-color: #33ff00;
+  animation: blink 1s step-end infinite;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* 扫描线特效 (CRT Scanline) - 让它看起来像旧屏幕 */
+.terminal-window::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 2;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none; /* 让点击穿透 */
 }
