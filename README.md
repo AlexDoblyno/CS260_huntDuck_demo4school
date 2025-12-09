@@ -38,7 +38,7 @@ The design philosophy moves away from typical modern flat UI, embracing a **Retr
 
 1.  **Clone the repo**
     ```sh
-    git clone [https://github.com/AlexDoblyno/CS260_huntDuck_demo4school.git](https://github.com/AlexDoblyno/CS260_huntDuck_demo4school.git)
+    git clone https://github.com/AlexDoblyno/CS260_huntDuck_demo4school.git
     cd duck-hunt
     ```
 
