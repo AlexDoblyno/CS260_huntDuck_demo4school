@@ -34,37 +34,36 @@ The design philosophy moves away from typical modern flat UI, embracing a **Retr
 
 ---
 
-## 🛠️ Installation & Setup
+## 🛠️ Goal
+# Start up service
+Create an HTTP service using Node.js and Express
 
-1.  **Clone the repo**
-    ```sh
-    git clone https://github.com/AlexDoblyno/CS260_huntDuck_demo4school.git
-    cd duck-hunt
-    ```
+Frontend served up using Express static middleware
 
-2.  **Install dependencies**
-    ```sh
-    npm install
-    ```
+Calls third party service endpoints
 
-3.  **Configure Environment**
-    Create a `.env` file (optional if using local DB) or set variables in your terminal for MongoDB Atlas:
-    ```sh
-    export MONGOUSER=your_user
-    export MONGOPASSWORD=your_password
-    export MONGOHOSTNAME=cluster0.example.mongodb.net
-    ```
+Backend provides service endpoints
 
-4.  **Run Development Server**
-    ```sh
-    # Runs both Vite frontend and Express backend
-    npm run dev
-    # OR run backend service directly
-    npm run server
-    ```
+Supports registration, login, logout, and restricted endpoint
 
-5.  **Open in Browser**
-    Visit `http://localhost:4000` (or the port shown in terminal).
+
+# Startup DB
+
+Stores application data in MongoDB
+
+Stores and retrieves credentials in MongoDB
+
+# Startup WebSocket
+
+Backend listens for WebSocket connection
+
+Frontend makes WebSocket connection
+
+Data sent over WebSocket connection
+
+WebSocket data displayed in the application interface
+
+The application is fully functional
 
 ---
 
