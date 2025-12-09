@@ -1,29 +1,27 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Duck from './Duck';
-import { useNavigate } from 'react-router-dom'; // 引入跳转钩子
-
 
 export default function Play() {
   const [score, setScore] = useState(0);
-  const [position, setPosition] = useState({ x: 50, y: 50 }); // 给个初始安全位置
+  const [position, setPosition] = useState({ x: 50, y: 100 });
+  const navigate = useNavigate();
 
   const getRandomPosition = () => {
-    // 获取当前视口宽高
     const winWidth = window.innerWidth;
     const winHeight = window.innerHeight;
 
-    // 边界计算：
-    // x: 0 到 (屏幕宽 - 鸭子宽80px)
-    // y: 60px(导航栏高) 到 (屏幕高 - 草地高150px - 鸭子高80px)
-    
-    const minX = 20;
-    const maxX = winWidth - 80;
-    
-    // 注意：Y轴要避开顶部的导航栏(约60px)和底部的草地(150px)
-    const minY = 80; 
-    const maxY = winHeight - 160 - 80; 
+    const DUCK_SIZE = 60;
+    const NAV_HEIGHT = 60;
+    const GROUND_HEIGHT = 150;
+    const PADDING = 20;
 
-    // 防止计算出负数（窗口太小时）
+    const minX = PADDING;
+    const maxX = winWidth - DUCK_SIZE - PADDING;
+
+    const minY = NAV_HEIGHT + PADDING;
+    const maxY = winHeight - GROUND_HEIGHT - DUCK_SIZE - PADDING;
+
     const safeMaxX = Math.max(minX, maxX);
     const safeMaxY = Math.max(minY, maxY);
 
@@ -34,47 +32,66 @@ export default function Play() {
   };
 
   useEffect(() => {
-    // 初始移动一次
     setPosition(getRandomPosition());
 
     const intervalId = setInterval(() => {
       setPosition(getRandomPosition());
-    }, 1500);
-    
+    }, 1200);
+
     return () => clearInterval(intervalId);
   }, []);
 
-  const shootDuck = () => {
-    setScore((s) => s + 1);
+  const shootDuck = (e) => {
+    e.stopPropagation(); 
+    setScore((prevScore) => prevScore + 1);
     setPosition(getRandomPosition());
   };
+
   const saveScore = async () => {
     const userName = localStorage.getItem('userName') || 'Anonymous';
-    const newScore = { name: userName, score: score, date: new Date().toLocaleDateString() };
+    const date = new Date().toLocaleDateString();
+    
+    const newScore = { name: userName, score: score, date: date };
 
-    await fetch('/api/score', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(newScore),
-    });
+    try {
+      await fetch('/api/score', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(newScore),
+      });
 
-    // 保存完后跳转到分数页
-    navigate('/scores');
+      navigate('/scores');
+    } catch (error) {
+      console.error('Failed to save score:', error);
+      navigate('/scores');
+    }
   };
 
   return (
     <div className="game-area-wrapper">
       <div className="scoreboard">
-        Score: {score} 
-        {/* 新增一个保存按钮 */}
+        <span>Score: {score}</span>
         <button 
-          onClick={saveScore} 
-          style={{marginLeft: '20px', fontSize: '1rem', padding: '5px 10px', width: 'auto'}}
+          onClick={saveScore}
+          style={{
+            marginLeft: '20px', 
+            fontSize: '0.9rem', 
+            padding: '5px 15px', 
+            width: 'auto',
+            verticalAlign: 'middle',
+            backgroundColor: '#e74c3c'
+          }}
         >
           Stop & Save
         </button>
       </div>
-      <Duck x={position.x} y={position.y} onClick={shootDuck} />
+
+      <Duck 
+        x={position.x} 
+        y={position.y} 
+        onClick={shootDuck} 
+      />
+
       <div className="ground"></div>
     </div>
   );

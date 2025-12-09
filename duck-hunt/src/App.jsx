@@ -10,7 +10,6 @@ function App() {
   return (
     <BrowserRouter>
       <div className="app-container">
-        {/* 导航栏 */}
         <header className="navbar">
           <div className="brand">🦆 Duck Hunt</div>
           <nav className="nav-links">
@@ -21,7 +20,6 @@ function App() {
           </nav>
         </header>
 
-        {/* 主内容区域 */}
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Login />} />

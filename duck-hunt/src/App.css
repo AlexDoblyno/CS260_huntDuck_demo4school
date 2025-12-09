@@ -1,5 +1,5 @@
 * {
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 
 html, body, #root {
@@ -7,16 +7,15 @@ html, body, #root {
   padding: 0;
   width: 100%;
   height: 100%;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 body {
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: #87CEEB; /* 天空蓝背景 */
-  color: #333; /* 默认文字颜色：深灰色 (防止白字) */
+  background-color: #87CEEB;
+  color: #333;
 }
 
-/* --- 2. 布局容器 --- */
 .app-container {
   display: flex;
   flex-direction: column;
@@ -24,24 +23,23 @@ body {
   height: 100vh;
 }
 
-/* --- 3. 导航栏 (修复宽度问题) --- */
 .navbar {
-  flex: 0 0 60px; /* 固定高度 */
-  width: 100%;    /* 强制占满宽 */
-  background-color: #2c3e50; /* 深蓝灰色 */
+  flex: 0 0 60px;
+  width: 100%;
+  background-color: #2c3e50;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 20px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   z-index: 100;
-  color: white; /* 导航栏里的字必须是白的 */
+  color: white;
 }
 
 .brand {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #ffcc00; /* 鸭子黄 */
+  color: #ffcc00;
 }
 
 .nav-links {
@@ -60,20 +58,18 @@ body {
   color: white;
 }
 
-/* --- 4. 主内容区域 (居中卡片) --- */
 .main-content {
   flex: 1;
   display: flex;
-  justify-content: center; /* 水平居中 */
-  align-items: center;     /* 垂直居中 */
+  justify-content: center;
+  align-items: center;
   position: relative;
   width: 100%;
 }
 
-/* --- 5. 卡片样式 (修复“隐身”文字) --- */
 .card {
-  background-color: white; /* 纯白背景 */
-  color: #333333;          /* 【关键修复】强制文字为深灰色 */
+  background-color: white;
+  color: #333333;
   padding: 40px;
   border-radius: 15px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.15);
@@ -82,13 +78,11 @@ body {
   width: 90%;
 }
 
-/* 确保标题也是黑色的 */
 .card h1 {
   margin-top: 0;
   color: #2c3e50; 
 }
 
-/* 输入框样式 */
 input[type="text"] {
   width: 100%;
   padding: 12px;
@@ -96,11 +90,10 @@ input[type="text"] {
   border: 2px solid #ddd;
   border-radius: 8px;
   font-size: 1rem;
-  color: #333; /* 输入框里的字也要黑的 */
+  color: #333;
   background: #fff;
 }
 
-/* 按钮样式 */
 button {
   width: 100%;
   padding: 12px;
@@ -123,7 +116,6 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* --- 6. 游戏区域修复 --- */
 .game-area-wrapper {
   position: absolute;
   top: 0;
@@ -148,7 +140,22 @@ button:disabled {
   left: 20px;
   font-size: 2rem;
   font-weight: bold;
-  color: white; /* 只有天上的计分板要是白字 */
+  color: white;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
   z-index: 20;
+}
+
+@media (max-width: 600px) {
+  .brand {
+    font-size: 1.2rem;
+  }
+  .nav-links {
+    gap: 10px;
+  }
+  .nav-item {
+    font-size: 0.9rem;
+  }
+  .scoreboard {
+    font-size: 1.5rem;
+  }
 }

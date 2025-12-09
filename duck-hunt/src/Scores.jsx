@@ -4,7 +4,6 @@ export default function Scores() {
   const [scores, setScores] = useState([]);
 
   useEffect(() => {
-    // 组件加载时调用 API
     fetch('/api/scores')
       .then((response) => response.json())
       .then((data) => {
