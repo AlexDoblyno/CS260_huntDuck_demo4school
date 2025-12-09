@@ -4,6 +4,12 @@ const userName = process.env.MONGOUSER;
 const password = process.env.MONGOPASSWORD;
 const hostname = process.env.MONGOHOSTNAME || 'localhost:27017';
 
+
+// const userName = process.env.MONGOUSER || 'your_username';
+// const password = process.env.MONGOPASSWORD || 'your_password';
+// const hostname = process.env.MONGOHOSTNAME || 'cluster0.xxxxx.mongodb.net';
+
+
 let url;
 
 if (userName && password) {
