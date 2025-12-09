@@ -12,7 +12,7 @@ export default function About() {
         Click on the ducks as they fly across the screen to score points.
       </p>
       <p style={{marginTop: '20px', fontSize: '0.9rem', color: '#666'}}>
-        Built for CS 260.
+        Find the source code on <a href="https://github.com/AlexDoblyno/CS260_huntDuck_demo4school.git" target="_blank" rel="noreferrer">GitHub</a>./
       </p>
     </div>
   );
