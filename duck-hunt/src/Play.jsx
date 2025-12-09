@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Duck from './Duck';
+import { useNavigate } from 'react-router-dom'; // 引入跳转钩子
+
 
 export default function Play() {
   const [score, setScore] = useState(0);
@@ -46,11 +48,32 @@ export default function Play() {
     setScore((s) => s + 1);
     setPosition(getRandomPosition());
   };
+  const saveScore = async () => {
+    const userName = localStorage.getItem('userName') || 'Anonymous';
+    const newScore = { name: userName, score: score, date: new Date().toLocaleDateString() };
+
+    await fetch('/api/score', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(newScore),
+    });
+
+    // 保存完后跳转到分数页
+    navigate('/scores');
+  };
 
   return (
     <div className="game-area-wrapper">
-      <div className="scoreboard">Score: {score}</div>
-      {/* 传递 x, y 给鸭子 */}
+      <div className="scoreboard">
+        Score: {score} 
+        {/* 新增一个保存按钮 */}
+        <button 
+          onClick={saveScore} 
+          style={{marginLeft: '20px', fontSize: '1rem', padding: '5px 10px', width: 'auto'}}
+        >
+          Stop & Save
+        </button>
+      </div>
       <Duck x={position.x} y={position.y} onClick={shootDuck} />
       <div className="ground"></div>
     </div>
