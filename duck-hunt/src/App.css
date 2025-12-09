@@ -159,3 +159,60 @@ button:disabled {
     font-size: 1.5rem;
   }
 }
+/* src/App.css */
+
+/* --- 修复：全局禁止文本选择 --- */
+/* 防止点击鸭子时变成选中文本状态，提升游戏手感 */
+.game-area-wrapper {
+  user-select: none; /* 标准语法 */
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+}
+
+/* --- 新增：左下角通讯面板 --- */
+.notification-panel {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 250px;
+  background: rgba(0, 0, 0, 0.6); /* 半透明黑底 */
+  color: white;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 0.9rem;
+  z-index: 50; /* 确保在最上层 */
+  pointer-events: none; /* 让鼠标点击穿透过去，不影响玩游戏 */
+}
+
+.player-count {
+  font-weight: bold;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+  color: #00ff00; /* 绿色显示人数 */
+}
+
+.event-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 150px;
+  overflow: hidden; /* 隐藏滚动条 */
+  display: flex;
+  flex-direction: column-reverse; /* 新消息在上面或下面，这里让最新的在最底部 */
+}
+
+.event-item {
+  margin-bottom: 4px;
+  animation: fadeOut 5s forwards; /* 消息5秒后自动变淡 */
+}
+
+.event-highlight {
+  color: #ffff00; /* 高亮重要消息 */
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
