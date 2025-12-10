@@ -529,3 +529,49 @@ button:disabled {
   vertical-align: middle;
   animation: blink 1s step-end infinite;
 }
+
+.quote-box {
+  background-color: rgba(0, 0, 0, 0.6);
+  border: 1px solid #444;
+  border-left: 3px solid var(--retro-3); /* 黄色左边框 */
+  padding: 15px 20px;
+  max-width: 400px;
+  width: 90%;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  text-align: left;
+  animation: fadeIn 1s ease-in;
+  margin-bottom: 20px;
+  position: relative;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.quote-label {
+  color: var(--retro-3); /* 复古黄 */
+  font-size: 0.7rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+
+.quote-content {
+  color: #eee;
+  font-size: 0.9rem;
+  font-style: italic;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  text-shadow: 0 0 2px rgba(255,255,255,0.2);
+}
+
+.quote-author {
+  color: var(--retro-5); /* 复古蓝 */
+  font-size: 0.8rem;
+  text-align: right;
+  font-weight: bold;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

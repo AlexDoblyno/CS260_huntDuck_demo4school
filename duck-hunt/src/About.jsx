@@ -1,6 +1,7 @@
 import React from 'react';
 
 export default function About() {
+
   return (
     <div className="card">
       <h1>About Duck Hunt</h1>
@@ -18,4 +19,5 @@ export default function About() {
       </p>
     </div>
   );
+
 }
