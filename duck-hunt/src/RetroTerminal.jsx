@@ -18,8 +18,8 @@ export default function RetroTerminal({ logs, onlineCount }) {
         <div className="header-title">
           <span className="status-dot">●</span> NET_LOG // V.2.0
         </div>
-        <button 
-          className="window-toggle-btn" 
+        <button
+          className="window-toggle-btn"
           onClick={() => setIsMinimized(!isMinimized)}
         >
           {isMinimized ? '▲' : '▼'}
@@ -49,4 +49,5 @@ export default function RetroTerminal({ logs, onlineCount }) {
       )}
     </div>
   );
+
 }

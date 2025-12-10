@@ -16,8 +16,11 @@ export default function About() {
           Built for CS 260.
          Find source code on https://github.com/AlexDoblyno/
           CS260_huntDuck_demo4school.git
+
       </p>
     </div>
+
   );
 
 }
+
